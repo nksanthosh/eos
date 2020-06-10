@@ -25,16 +25,17 @@ extern const char* const state_history_plugin_abi;
 prunable_data_type::prunable_data_t get_prunable_data_from_traces(std::vector<state_history::transaction_trace>& traces,
                                                                   const transaction_id_type&                     id) {
    auto cfd_trace_itr = std::find_if(traces.begin(), traces.end(), [id](const state_history::transaction_trace& v) {
-      return v.get<state_history::transaction_trace_v0>().id == id;
+      // return v.get<state_history::transaction_trace_v0>().id == id;
+      return fc::get<state_history::transaction_trace_v0>(v).id == id;
    });
 
    // make sure the trace with cfd can be found
    BOOST_REQUIRE(cfd_trace_itr != traces.end());
-   BOOST_REQUIRE(cfd_trace_itr->contains<state_history::transaction_trace_v0>());
-   auto trace_v0 = cfd_trace_itr->get<state_history::transaction_trace_v0>();
+   BOOST_REQUIRE(fc::holds_alternative<state_history::transaction_trace_v0>(*cfd_trace_itr));
+   auto trace_v0 = fc::get<state_history::transaction_trace_v0>(*cfd_trace_itr);
    BOOST_REQUIRE(trace_v0.partial);
-   BOOST_REQUIRE(trace_v0.partial->contains<state_history::partial_transaction_v1>());
-   return trace_v0.partial->get<state_history::partial_transaction_v1>().prunable_data->prunable_data;
+   BOOST_REQUIRE(fc::holds_alternative<state_history::partial_transaction_v1>(*trace_v0.partial));
+   return fc::get<state_history::partial_transaction_v1>(*trace_v0.partial).prunable_data->prunable_data;
 }
 
 prunable_data_type::prunable_data_t get_prunable_data_from_traces_bin(const std::vector<char>&   entry,
