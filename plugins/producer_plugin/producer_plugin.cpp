@@ -1029,12 +1029,12 @@ producer_plugin::whitelist_blacklist producer_plugin::get_whitelist_blacklist() 
 
 void producer_plugin::set_whitelist_blacklist(const producer_plugin::whitelist_blacklist& params) {
    chain::controller& chain = my->chain_plug->chain();
-   if(params.actor_whitelist.has_value()) chain.set_actor_whitelist(*params.actor_whitelist);
-   if(params.actor_blacklist.has_value()) chain.set_actor_blacklist(*params.actor_blacklist);
-   if(params.contract_whitelist.has_value()) chain.set_contract_whitelist(*params.contract_whitelist);
-   if(params.contract_blacklist.has_value()) chain.set_contract_blacklist(*params.contract_blacklist);
-   if(params.action_blacklist.has_value()) chain.set_action_blacklist(*params.action_blacklist);
-   if(params.key_blacklist.has_value()) chain.set_key_blacklist(*params.key_blacklist);
+   if(params.actor_whitelist.valid()) chain.set_actor_whitelist(*params.actor_whitelist);
+   if(params.actor_blacklist.valid()) chain.set_actor_blacklist(*params.actor_blacklist);
+   if(params.contract_whitelist.valid()) chain.set_contract_whitelist(*params.contract_whitelist);
+   if(params.contract_blacklist.valid()) chain.set_contract_blacklist(*params.contract_blacklist);
+   if(params.action_blacklist.valid()) chain.set_action_blacklist(*params.action_blacklist);
+   if(params.key_blacklist.valid()) chain.set_key_blacklist(*params.key_blacklist);
 }
 
 producer_plugin::integrity_hash_information producer_plugin::get_integrity_hash() const {
@@ -1919,7 +1919,7 @@ optional<fc::time_point> producer_plugin_impl::calculate_producer_wake_up_time( 
          }
       }
    }
-   if( !wake_up_time.has_value() ) {
+   if( !wake_up_time.valid() ) {
       fc_dlog(_log, "Not Scheduling Speculative/Production, no local producers had valid wake up times");
    }
 

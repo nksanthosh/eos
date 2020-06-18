@@ -544,7 +544,7 @@ ST& operator<<(ST& ds, const history_serial_wrapper<eosio::chain::account_delta>
 inline fc::optional<uint64_t> cap_error_code(const fc::optional<uint64_t>& error_code) {
    fc::optional<uint64_t> result;
 
-   if (!error_code.has_value())
+   if (!error_code.valid())
       return result;
 
    const uint64_t upper_limit = static_cast<uint64_t>(eosio::chain::system_error_code::generic_system_error);

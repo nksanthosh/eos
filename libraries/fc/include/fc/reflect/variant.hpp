@@ -27,7 +27,7 @@ namespace fc
          template<typename M>
          void add( mutable_variant_object& vo, const char* name, const optional<M>& v )const
          { 
-            if( v.has_value() )
+            if( v.valid() )
                vo(name,*v);
          }
          template<typename M>

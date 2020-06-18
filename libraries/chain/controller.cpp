@@ -981,7 +981,7 @@ struct controller_impl {
 
             if (std::clamp(header.version, v2::minimum_version, v2::maximum_version) == header.version ) {
                fc::optional<genesis_state> genesis = extract_legacy_genesis_state(*snapshot, header.version);
-               EOS_ASSERT( genesis.has_value(), snapshot_exception,
+               EOS_ASSERT( genesis.valid(), snapshot_exception,
                            "Snapshot indicates chain_snapshot_header version 2, but does not contain a genesis_state. "
                            "It must be corrupted.");
                snapshot->read_section<global_property_object>([&db=this->db,gs_chain_id=genesis->compute_chain_id()]( auto &section ) {
@@ -1533,7 +1533,7 @@ struct controller_impl {
          try {
             const transaction& trn = trx->packed_trx()->get_transaction();
             if( trx->implicit ) {
-               EOS_ASSERT( !explicit_net_usage_words.has_value(), transaction_exception, "NET usage cannot be explicitly set for implicit transactions" );
+               EOS_ASSERT( !explicit_net_usage_words.valid(), transaction_exception, "NET usage cannot be explicitly set for implicit transactions" );
                trx_context.init_for_implicit_trx();
                trx_context.enforce_whiteblacklist = false;
             } else {
@@ -1621,7 +1621,7 @@ struct controller_impl {
                      controller::block_status s,
                      const optional<block_id_type>& producer_block_id )
    {
-      EOS_ASSERT( !pending.has_value(), block_validate_exception, "pending block already exists" );
+      EOS_ASSERT( !pending.valid(), block_validate_exception, "pending block already exists" );
 
       if (auto dm_logger = get_deep_mind_logger()) {
          // The head block represents the block just before this one that is about to start, so add 1 to get this block num
@@ -1720,13 +1720,13 @@ struct controller_impl {
 
          const auto& gpo = self.get_global_properties();
 
-         if( gpo.proposed_schedule_block_num.has_value() && // if there is a proposed schedule that was proposed in a block ...
+         if( gpo.proposed_schedule_block_num.valid() && // if there is a proposed schedule that was proposed in a block ...
              ( *gpo.proposed_schedule_block_num <= pbhs.dpos_irreversible_blocknum ) && // ... that has now become irreversible ...
              pbhs.prev_pending_schedule.schedule.producers.size() == 0 // ... and there was room for a new pending schedule prior to any possible promotion
          )
          {
             // Promote proposed schedule to pending schedule.
-            if( !replay_head_time.has_value() ) {
+            if( !replay_head_time.valid() ) {
                ilog( "promoting proposed schedule (set in block ${proposed_num}) to pending; current block: ${n} lib: ${lib} schedule: ${schedule} ",
                      ("proposed_num", *gpo.proposed_schedule_block_num)("n", pbhs.block_num)
                      ("lib", pbhs.dpos_irreversible_blocknum)
@@ -1775,7 +1775,7 @@ struct controller_impl {
 
    void finalize_block()
    {
-      EOS_ASSERT( pending.has_value(), block_validate_exception, "it is not valid to finalize when there is no pending block");
+      EOS_ASSERT( pending.valid(), block_validate_exception, "it is not valid to finalize when there is no pending block");
       EOS_ASSERT( fc::holds_alternative<building_block>(pending->_block_stage), block_validate_exception, "already called finalize_block");
 
       try {
@@ -1857,7 +1857,7 @@ struct controller_impl {
             EOS_ASSERT( bsp == head, fork_database_exception, "committed block did not become the new head in fork database");
          }
 
-         if( !replay_head_time.has_value() && read_mode != db_read_mode::IRREVERSIBLE ) {
+         if( !replay_head_time.valid() && read_mode != db_read_mode::IRREVERSIBLE ) {
             reversible_blocks.create<reversible_block_object>( [&]( auto& ubo ) {
                ubo.blocknum = bsp->block_num;
                ubo.set_block( bsp->block );
@@ -2091,7 +2091,7 @@ struct controller_impl {
                     const forked_branch_callback& forked_branch_cb, const trx_meta_cache_lookup& trx_lookup )
    {
       controller::block_status s = controller::block_status::complete;
-      EOS_ASSERT(!pending.has_value(), block_validate_exception, "it is not valid to push a block when there is a pending block");
+      EOS_ASSERT(!pending.valid(), block_validate_exception, "it is not valid to push a block when there is a pending block");
 
       auto reset_prod_light_validation = fc::make_scoped_exit([old_value=trusted_producer_light_validation, this]() {
          trusted_producer_light_validation = old_value;
@@ -2129,7 +2129,7 @@ struct controller_impl {
       self.validate_db_available_size();
       self.validate_reversible_available_size();
 
-      EOS_ASSERT(!pending.has_value(), block_validate_exception, "it is not valid to push a block when there is a pending block");
+      EOS_ASSERT(!pending.valid(), block_validate_exception, "it is not valid to push a block when there is a pending block");
 
       try {
          EOS_ASSERT( b, block_validate_exception, "trying to push empty block" );
@@ -2724,7 +2724,7 @@ void controller::start_block( block_timestamp_type when, uint16_t confirm_block_
 {
    validate_db_available_size();
 
-   EOS_ASSERT( !my->pending.has_value(), block_validate_exception, "pending block already exists" );
+   EOS_ASSERT( !my->pending.valid(), block_validate_exception, "pending block already exists" );
 
    vector<digest_type> new_protocol_feature_activations;
 
@@ -2917,7 +2917,7 @@ account_name  controller::fork_db_pending_head_block_producer()const {
 }
 
 time_point controller::pending_block_time()const {
-   EOS_ASSERT( my->pending.has_value(), block_validate_exception, "no pending block" );
+   EOS_ASSERT( my->pending.valid(), block_validate_exception, "no pending block" );
 
    if( fc::holds_alternative<completed_block>(my->pending->_block_stage) )
       return fc::get<completed_block>(my->pending->_block_stage)._block_state->header.timestamp;
@@ -2926,7 +2926,7 @@ time_point controller::pending_block_time()const {
 }
 
 account_name controller::pending_block_producer()const {
-   EOS_ASSERT( my->pending.has_value(), block_validate_exception, "no pending block" );
+   EOS_ASSERT( my->pending.valid(), block_validate_exception, "no pending block" );
 
    if( fc::holds_alternative<completed_block>(my->pending->_block_stage) )
       return fc::get<completed_block>(my->pending->_block_stage)._block_state->header.producer;
@@ -2935,7 +2935,7 @@ account_name controller::pending_block_producer()const {
 }
 
 const block_signing_authority& controller::pending_block_signing_authority()const {
-   EOS_ASSERT( my->pending.has_value(), block_validate_exception, "no pending block" );
+   EOS_ASSERT( my->pending.valid(), block_validate_exception, "no pending block" );
 
    if( fc::holds_alternative<completed_block>(my->pending->_block_stage) )
       return fc::get<completed_block>(my->pending->_block_stage)._block_state->valid_block_signing_authority;
@@ -2944,12 +2944,12 @@ const block_signing_authority& controller::pending_block_signing_authority()cons
 }
 
 optional<block_id_type> controller::pending_producer_block_id()const {
-   EOS_ASSERT( my->pending.has_value(), block_validate_exception, "no pending block" );
+   EOS_ASSERT( my->pending.valid(), block_validate_exception, "no pending block" );
    return my->pending->_producer_block_id;
 }
 
 const deque<transaction_receipt>& controller::get_pending_trx_receipts()const {
-   EOS_ASSERT( my->pending.has_value(), block_validate_exception, "no pending block" );
+   EOS_ASSERT( my->pending.valid(), block_validate_exception, "no pending block" );
    return my->pending->get_trx_receipts();
 }
 
@@ -3049,7 +3049,7 @@ sha256 controller::calculate_integrity_hash()const { try {
 } FC_LOG_AND_RETHROW() }
 
 void controller::write_snapshot( const snapshot_writer_ptr& snapshot ) const {
-   EOS_ASSERT( !my->pending.has_value(), block_validate_exception, "cannot take a consistent snapshot with a pending block" );
+   EOS_ASSERT( !my->pending.valid(), block_validate_exception, "cannot take a consistent snapshot with a pending block" );
    return my->add_to_snapshot(snapshot);
 }
 
@@ -3061,7 +3061,7 @@ int64_t controller::set_proposed_producers( vector<producer_authority> producers
       return -1;
    }
 
-   if( gpo.proposed_schedule_block_num.has_value() ) {
+   if( gpo.proposed_schedule_block_num.valid() ) {
       if( *gpo.proposed_schedule_block_num != cur_block_num )
          return -1; // there is already a proposed schedule set in a previous block, wait for it to become pending
 
@@ -3105,7 +3105,7 @@ int64_t controller::set_proposed_producers( vector<producer_authority> producers
 }
 
 const producer_authority_schedule&    controller::active_producers()const {
-   if( !(my->pending.has_value()) )
+   if( !(my->pending.valid()) )
       return  my->head->active_schedule;
 
    if( fc::holds_alternative<completed_block>(my->pending->_block_stage) )
@@ -3115,7 +3115,7 @@ const producer_authority_schedule&    controller::active_producers()const {
 }
 
 const producer_authority_schedule& controller::pending_producers()const {
-   if( !(my->pending.has_value()) )
+   if( !(my->pending.valid()) )
       return  my->head->pending_schedule.schedule;
 
    if( fc::holds_alternative<completed_block>(my->pending->_block_stage) )
@@ -3138,14 +3138,14 @@ const producer_authority_schedule& controller::pending_producers()const {
 
 optional<producer_authority_schedule> controller::proposed_producers()const {
    const auto& gpo = get_global_properties();
-   if( !gpo.proposed_schedule_block_num.has_value() )
+   if( !gpo.proposed_schedule_block_num.valid() )
       return optional<producer_authority_schedule>();
 
    return producer_authority_schedule::from_shared(gpo.proposed_schedule);
 }
 
 bool controller::light_validation_allowed() const {
-   if (!my->pending.has_value() || my->in_trx_requiring_checks) {
+   if (!my->pending.valid() || my->in_trx_requiring_checks) {
       return false;
    }
 
@@ -3250,11 +3250,11 @@ void controller::check_key_list( const public_key_type& key )const {
 }
 
 bool controller::is_building_block()const {
-   return my->pending.has_value();
+   return my->pending.valid();
 }
 
 bool controller::is_producing_block()const {
-   if( !my->pending.has_value() ) return false;
+   if( !my->pending.valid() ) return false;
 
    return (my->pending->_block_status == block_status::incomplete);
 }
@@ -3420,7 +3420,7 @@ fc::optional<uint64_t> controller::convert_exception_to_error_code( const fc::ex
 
    if( e_ptr == nullptr ) return {};
 
-   if( !e_ptr->error_code.has_value() ) return static_cast<uint64_t>(system_error_code::generic_system_error);
+   if( !e_ptr->error_code.valid() ) return static_cast<uint64_t>(system_error_code::generic_system_error);
 
    return e_ptr->error_code;
 }

@@ -42,7 +42,7 @@ namespace fc
    class microseconds;
    template<typename T> struct safe;
 
-   #define STD_VARIANT
+   //#define STD_VARIANT
    #ifdef STD_VARIANT
    #include <variant>
    template <typename... Types>
@@ -359,7 +359,7 @@ namespace fc
         variant( const optional<T>& v )
         {
            memset( this, 0, sizeof(*this) );
-           if( v.has_value() ) *this = variant(*v);
+           if( v.valid() ) *this = variant(*v);
         }
 
         template<typename T>

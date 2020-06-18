@@ -33,7 +33,7 @@ prunable_data_type::prunable_data_t get_prunable_data_from_traces(std::vector<st
    BOOST_REQUIRE(cfd_trace_itr != traces.end());
    BOOST_REQUIRE(fc::holds_alternative<state_history::transaction_trace_v0>(*cfd_trace_itr));
    auto trace_v0 = fc::get<state_history::transaction_trace_v0>(*cfd_trace_itr);
-   BOOST_REQUIRE(trace_v0.partial);
+   BOOST_REQUIRE(trace_v0.partial;
    BOOST_REQUIRE(fc::holds_alternative<state_history::partial_transaction_v1>(*trace_v0.partial));
    return fc::get<state_history::partial_transaction_v1>(*trace_v0.partial).prunable_data->prunable_data;
 }

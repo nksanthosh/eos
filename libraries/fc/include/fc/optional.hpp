@@ -2,12 +2,6 @@
 #include <fc/utility.hpp>
 #include <assert.h>
 
-//#define STD_OPTIONAL
-
-#ifdef STD_OPTIONAL
-#include <optional>
-#endif
-
 namespace fc {
 #ifdef _MSC_VER
 # pragma warning(push)
@@ -15,13 +9,6 @@ namespace fc {
 # pragma warning(disable:4522) /* multiple assignment operators */
 #endif
   bool assert_optional(bool is_valid ); // defined in exception.cpp
-
-#ifdef STD_OPTIONAL
-
-  template <typename T>
-  using optional = std::optional<T>;
-
-#else
 
   /**
    *  @brief provides stack-based nullable value similar to boost::optional
@@ -207,7 +194,6 @@ namespace fc {
         return *this;
       }
 
-      bool has_value() const { return _valid; }
       bool valid()const     { return _valid;  }
       bool operator!()const { return !_valid; }
 
@@ -281,8 +267,6 @@ namespace fc {
   bool operator != ( const optional<T>& left, const U& u ) {
     return !left || *left != u;
   }
-
-#endif
 
 #ifdef _MSC_VER
 # pragma warning(pop)
