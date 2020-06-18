@@ -58,7 +58,7 @@ class whitelist_blacklist_tester {
       }
 
       void shutdown() {
-         FC_ASSERT( chain, "chain is not up" );
+         FC_ASSERT( chain.valid(), "chain is not up" );
          last_produced_block = chain->get_last_produced_block_map();
          wdump((last_produced_block));
          chain.reset();

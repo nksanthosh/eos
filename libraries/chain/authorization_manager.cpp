@@ -418,7 +418,7 @@ namespace eosio { namespace chain {
                   "the owner of the linked permission needs to be the actor of the declared authorization" );
 
       const auto unlinked_permission_name = lookup_linked_permission(unlink.account, unlink.code, unlink.type);
-      EOS_ASSERT( unlinked_permission_name, transaction_exception,
+      EOS_ASSERT( unlinked_permission_name.valid(), transaction_exception,
                   "cannot unlink non-existent permission link of account '${account}' for actions matching '${code}::${action}'",
                   ("account", unlink.account)("code", unlink.code)("action", unlink.type) );
 

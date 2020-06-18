@@ -2150,7 +2150,7 @@ fc::variant read_only::get_block(const read_only::get_block_params& params) cons
       block_num = fc::to_uint64(params.block_num_or_id);
    } catch( ... ) {}
 
-   if( block_num ) {
+   if( block_num.valid() ) {
       block = db.fetch_block_by_number( *block_num );
    } else {
       try {
@@ -2211,7 +2211,7 @@ fc::variant read_only::get_block_header_state(const get_block_header_state_param
       block_num = fc::to_uint64(params.block_num_or_id);
    } catch( ... ) {}
 
-   if( block_num ) {
+   if( block_num.valid() ) {
       b = db.fetch_block_state_by_number(*block_num);
    } else {
       try {
@@ -2498,11 +2498,11 @@ read_only::get_account_results read_only::get_account( const get_account_params&
    uint32_t greylist_limit = db.is_resource_greylisted(result.account_name) ? 1 : config::maximum_elastic_resource_multiplier;
    const block_timestamp_type current_usage_time (db.head_block_time());
    result.net_limit.set( rm.get_account_net_limit_ex( result.account_name, greylist_limit, current_usage_time).first );
-   if ( result.net_limit.last_usage_update_time && (result.net_limit.last_usage_update_time->slot == 0) ) {   // account has no action yet
+   if ( result.net_limit.last_usage_update_time.valid() && (result.net_limit.last_usage_update_time->slot == 0) ) {   // account has no action yet
       result.net_limit.last_usage_update_time = accnt_obj.creation_date;
    }
    result.cpu_limit.set( rm.get_account_cpu_limit_ex( result.account_name, greylist_limit, current_usage_time).first );
-   if ( result.cpu_limit.last_usage_update_time && (result.cpu_limit.last_usage_update_time->slot == 0) ) {   // account has no action yet
+   if ( result.cpu_limit.last_usage_update_time.valid() && (result.cpu_limit.last_usage_update_time->slot == 0) ) {   // account has no action yet
       result.cpu_limit.last_usage_update_time = accnt_obj.creation_date;
    }
    result.ram_usage = rm.get_account_ram_usage( result.account_name );
@@ -2536,7 +2536,7 @@ read_only::get_account_results read_only::get_account( const get_account_params&
 
       auto core_symbol = extract_core_symbol();
 
-      if (params.expected_core_symbol)
+      if (params.expected_core_symbol.valid())
          core_symbol = *(params.expected_core_symbol);
 
       const auto* t_id = d.find<chain::table_id_object, chain::by_code_scope_table>(boost::make_tuple( token_code, params.account_name, N(accounts) ));

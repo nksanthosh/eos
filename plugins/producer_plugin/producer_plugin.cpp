@@ -1919,7 +1919,7 @@ optional<fc::time_point> producer_plugin_impl::calculate_producer_wake_up_time( 
          }
       }
    }
-   if( !wake_up_time.valid() ) {
+   if( !wake_up_time ) {
       fc_dlog(_log, "Not Scheduling Speculative/Production, no local producers had valid wake up times");
    }
 
