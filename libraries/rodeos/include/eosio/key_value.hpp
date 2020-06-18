@@ -543,7 +543,7 @@ public:
 
       T operator[](const key_type& key) const {
          auto opt = get(key);
-         eosio::check(opt.valid(), __FILE__ ":" + std::to_string(__LINE__) + " Key not found in `[]`");
+         eosio::check(opt, __FILE__ ":" + std::to_string(__LINE__) + " Key not found in `[]`");
          return *opt;
       }
 
