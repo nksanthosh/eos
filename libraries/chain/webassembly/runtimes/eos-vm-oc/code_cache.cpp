@@ -69,7 +69,7 @@ void code_cache_async::wait_on_compile_monitor_message() {
       }
 
       auto [success, message, fds] = read_message_with_fds(_compile_monitor_read_socket);
-      if(!success || !fc::holds_alternative<wasm_compilation_result_message>(message)) {
+      if(!success || !std::holds_alternative<wasm_compilation_result_message>(message)) {
          _ctx.stop();
          return;
       }

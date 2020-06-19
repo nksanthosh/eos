@@ -147,12 +147,12 @@ namespace fc {
        fc::stringstream ss( string( dat, l ) );
        fc::stringstream key;
        fc::string tmp;
-       fc::getline( ss, tmp );
-       fc::getline( ss, tmp );
+       std::getline( ss, tmp );
+       std::getline( ss, tmp );
        while( tmp.size() && tmp[0] != '-' )
        {
          key << tmp; 
-         fc::getline( ss, tmp );
+         std::getline( ss, tmp );
        }
        auto str = key.str();
        str = fc::base64_decode( str );
@@ -310,13 +310,13 @@ namespace fc {
        stringstream ss( string( dat, l ) );
        stringstream key;
        string tmp;
-       fc::getline( ss, tmp );
-       fc::getline( ss, tmp );
+       std::getline( ss, tmp );
+       std::getline( ss, tmp );
 
        while( tmp.size() && tmp[0] != '-' )
        {
          key << tmp; 
-         fc::getline( ss, tmp );
+         std::getline( ss, tmp );
        }
        auto str = key.str();
        str = fc::base64_decode( str );

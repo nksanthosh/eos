@@ -1183,11 +1183,11 @@ BOOST_FIXTURE_TEST_CASE(transaction_tests, TESTER) { try {
       std::set<transaction_id_type> block_ids;
       for( const auto& receipt : bsp->block->transactions ) {
          transaction_id_type id;
-         if( fc::holds_alternative<packed_transaction>(receipt.trx) ) {
-            const auto& pt = fc::get<packed_transaction>(receipt.trx);
+         if( std::holds_alternative<packed_transaction>(receipt.trx) ) {
+            const auto& pt = std::get<packed_transaction>(receipt.trx);
             id = pt.id();
          } else {
-            id = fc::get<transaction_id_type>(receipt.trx);
+            id = std::get<transaction_id_type>(receipt.trx);
          }
          block_ids.insert( id );
       }

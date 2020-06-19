@@ -31,7 +31,7 @@ namespace eosio { namespace chain {
    };
 
    struct transaction_receipt_v0 : public transaction_receipt_header {
-      using trx_type = fc::static_variant<transaction_id_type, packed_transaction_v0>;
+      using trx_type = std::variant<transaction_id_type, packed_transaction_v0>;
       transaction_receipt_v0() : transaction_receipt_header() {}
       transaction_receipt_v0(const transaction_receipt_header& header, trx_type&& t): transaction_receipt_header(header), trx(std::move(t)){}
       explicit transaction_receipt_v0( transaction_id_type tid ):transaction_receipt_header(executed),trx(std::move(tid)){}
@@ -44,10 +44,10 @@ namespace eosio { namespace chain {
          fc::raw::pack( enc, status );
          fc::raw::pack( enc, cpu_usage_us );
          fc::raw::pack( enc, net_usage_words );
-         if( fc::holds_alternative<transaction_id_type>(trx) )
-            fc::raw::pack( enc, fc::get<transaction_id_type>(trx) );
+         if( std::holds_alternative<transaction_id_type>(trx) )
+            fc::raw::pack( enc, std::get<transaction_id_type>(trx) );
          else
-            fc::raw::pack( enc, fc::get<packed_transaction_v0>(trx).packed_digest() ); 
+            fc::raw::pack( enc, std::get<packed_transaction_v0>(trx).packed_digest() ); 
          return enc.result();
       }
    };
@@ -74,7 +74,7 @@ namespace eosio { namespace chain {
    namespace detail {
       template<typename... Ts>
       struct block_extension_types {
-         using block_extension_t = fc::static_variant< Ts... >;
+         using block_extension_t = std::variant< Ts... >;
          using decompose_t = decompose< Ts... >;
       };
    }
@@ -113,14 +113,9 @@ namespace eosio { namespace chain {
       transaction_receipt(transaction_receipt_v0&&, bool legacy);
       explicit transaction_receipt( const transaction_id_type& tid ):transaction_receipt_header(executed),trx(tid){}
 
-      //#define STD_VARIANT
-      #ifdef STD_VARIANT
       explicit transaction_receipt( const packed_transaction& ptrx ):transaction_receipt_header(executed),trx(std::in_place_type<packed_transaction>, ptrx){}
-      #else
-      explicit transaction_receipt( const packed_transaction& ptrx ):transaction_receipt_header(executed),trx(std::in_place_type<decltype(ptrx)>, ptrx){}
-      #endif
-
-      fc::static_variant<transaction_id_type, packed_transaction> trx;
+      
+      std::variant<transaction_id_type, packed_transaction> trx;
 
       std::size_t maximum_pruned_pack_size( packed_transaction::cf_compression_type segment_compression ) const;
 
@@ -129,10 +124,10 @@ namespace eosio { namespace chain {
          fc::raw::pack( enc, status );
          fc::raw::pack( enc, cpu_usage_us );
          fc::raw::pack( enc, net_usage_words );
-         if( fc::holds_alternative<transaction_id_type>(trx) )
-            fc::raw::pack( enc, fc::get<transaction_id_type>(trx) );
+         if( std::holds_alternative<transaction_id_type>(trx) )
+            fc::raw::pack( enc, std::get<transaction_id_type>(trx) );
          else
-            fc::raw::pack( enc, fc::get<packed_transaction>(trx).packed_digest() );
+            fc::raw::pack( enc, std::get<packed_transaction>(trx).packed_digest() );
          return enc.result();
       }
    };

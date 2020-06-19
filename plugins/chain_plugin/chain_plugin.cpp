@@ -2017,8 +2017,8 @@ read_only::get_producers_result read_only::get_producers( const read_only::get_p
          ("total_votes", 0.0f);
 
       // detect a legacy key and maintain API compatibility for those entries
-      if (fc::holds_alternative<block_signing_authority_v0>(p.authority)) {
-         const auto& auth = fc::get<block_signing_authority_v0>(p.authority);
+      if (std::holds_alternative<block_signing_authority_v0>(p.authority)) {
+         const auto& auth = std::get<block_signing_authority_v0>(p.authority);
          if (auth.keys.size() == 1 && auth.keys.back().weight == auth.threshold) {
             row("producer_key", auth.keys.back().key);
          }
@@ -2248,11 +2248,11 @@ void read_write::push_transaction(const read_write::push_transaction_params& par
       } EOS_RETHROW_EXCEPTIONS(chain::packed_transaction_type_exception, "Invalid packed transaction")
 
       app().get_method<incoming::methods::transaction_async>()(input_trx, true,
-            [this, next](const fc::static_variant<fc::exception_ptr, transaction_trace_ptr>& result) -> void {
-         if (fc::holds_alternative<fc::exception_ptr>(result)) {
-            next(fc::get<fc::exception_ptr>(result));
+            [this, next](const std::variant<fc::exception_ptr, transaction_trace_ptr>& result) -> void {
+         if (std::holds_alternative<fc::exception_ptr>(result)) {
+            next(std::get<fc::exception_ptr>(result));
          } else {
-            auto trx_trace_ptr = fc::get<transaction_trace_ptr>(result);
+            auto trx_trace_ptr = std::get<transaction_trace_ptr>(result);
 
             try {
                fc::variant output;
@@ -2322,12 +2322,12 @@ void read_write::push_transaction(const read_write::push_transaction_params& par
 }
 
 static void push_recurse(read_write* rw, int index, const std::shared_ptr<read_write::push_transactions_params>& params, const std::shared_ptr<read_write::push_transactions_results>& results, const next_function<read_write::push_transactions_results>& next) {
-   auto wrapped_next = [=](const fc::static_variant<fc::exception_ptr, read_write::push_transaction_results>& result) {
-      if (fc::holds_alternative<fc::exception_ptr>(result)) {
-         const auto& e = fc::get<fc::exception_ptr>(result);
+   auto wrapped_next = [=](const std::variant<fc::exception_ptr, read_write::push_transaction_results>& result) {
+      if (std::holds_alternative<fc::exception_ptr>(result)) {
+         const auto& e = std::get<fc::exception_ptr>(result);
          results->emplace_back( read_write::push_transaction_results{ transaction_id_type(), fc::mutable_variant_object( "error", e->to_detail_string() ) } );
       } else {
-         const auto& r = fc::get<read_write::push_transaction_results>(result);
+         const auto& r = std::get<read_write::push_transaction_results>(result);
          results->emplace_back( r );
       }
 
@@ -2369,11 +2369,11 @@ void read_write::send_transaction(const read_write::send_transaction_params& par
       } EOS_RETHROW_EXCEPTIONS(chain::packed_transaction_type_exception, "Invalid packed transaction")
 
       app().get_method<incoming::methods::transaction_async>()(input_trx, true,
-            [this, next](const fc::static_variant<fc::exception_ptr, transaction_trace_ptr>& result) -> void {
-         if (fc::holds_alternative<fc::exception_ptr>(result)) {
-            next(fc::get<fc::exception_ptr>(result));
+            [this, next](const std::variant<fc::exception_ptr, transaction_trace_ptr>& result) -> void {
+         if (std::holds_alternative<fc::exception_ptr>(result)) {
+            next(std::get<fc::exception_ptr>(result));
          } else {
-            auto trx_trace_ptr = fc::get<transaction_trace_ptr>(result);
+            auto trx_trace_ptr = std::get<transaction_trace_ptr>(result);
 
             try {
                fc::variant output;
@@ -2612,8 +2612,8 @@ read_only::get_account_results read_only::get_account( const get_account_params&
    return result;
 }
 
-static variant action_abi_to_variant( const abi_def& abi, type_name action_type ) {
-   variant v;
+static fc::variant action_abi_to_variant( const abi_def& abi, type_name action_type ) {
+   fc::variant v;
    auto it = std::find_if(abi.structs.begin(), abi.structs.end(), [&](auto& x){return x.name == action_type;});
    if( it != abi.structs.end() )
       to_variant( it->fields,  v );

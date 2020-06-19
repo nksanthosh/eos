@@ -39,7 +39,7 @@ public:
 #ifdef BOOST_ASIO_HAS_LOCAL_SOCKETS
    using unix_socket_ptr = std::unique_ptr<local::stream_protocol::socket>;
 #endif
-   using connection = static_variant<raw_socket_ptr, ssl_socket_ptr
+   using connection = std::variant<raw_socket_ptr, ssl_socket_ptr
 #ifdef BOOST_ASIO_HAS_LOCAL_SOCKETS
                                      , unix_socket_ptr
 #endif
@@ -260,7 +260,7 @@ public:
    };
 
    bool check_closed( const connection_map::iterator& conn_itr ) {
-      if (fc::visit(check_closed_visitor(), conn_itr->second)) {
+      if (std::visit(check_closed_visitor(), conn_itr->second)) {
          _connections.erase(conn_itr);
          return true;
       } else {
@@ -358,7 +358,7 @@ public:
       http::response<http::string_body> res;
 
       // Receive the HTTP response
-      ec = fc::visit(read_response_visitor(this, buffer, res, deadline), conn_iter->second);
+      ec = std::visit(read_response_visitor(this, buffer, res, deadline), conn_iter->second);
       FC_ASSERT(!ec, "Failed to read response: ${message}", ("message",ec.message()));
 
       // if the connection can be kept open, keep it open

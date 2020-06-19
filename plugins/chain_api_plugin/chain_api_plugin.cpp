@@ -51,15 +51,15 @@ struct async_result_visitor : public fc::visitor<fc::variant> {
       try { \
          auto params = parse_params<api_namespace::call_name ## _params, params_type>(body);\
          api_handle.call_name( std::move(params),\
-            [cb, body](const fc::static_variant<fc::exception_ptr, call_result>& result){\
-               if (fc::holds_alternative<fc::exception_ptr>(result)) {\
+            [cb, body](const std::variant<fc::exception_ptr, call_result>& result){\
+               if (std::holds_alternative<fc::exception_ptr>(result)) {\
                   try {\
-                     fc::get<fc::exception_ptr>(result)->dynamic_rethrow_exception();\
+                     std::get<fc::exception_ptr>(result)->dynamic_rethrow_exception();\
                   } catch (...) {\
                      http_plugin::handle_exception(#api_name, #call_name, body, cb);\
                   }\
                } else {\
-                  cb(http_response_code, fc::visit(async_result_visitor(), result));\
+                  cb(http_response_code, std::visit(async_result_visitor(), result));\
                }\
             });\
       } catch (...) { \

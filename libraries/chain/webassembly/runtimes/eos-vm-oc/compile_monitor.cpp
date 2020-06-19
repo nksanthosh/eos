@@ -123,7 +123,7 @@ struct compile_monitor_session {
          void* code_ptr = nullptr;
          void* mem_ptr = nullptr;
          try {
-            if(success && fc::holds_alternative<code_compilation_result_message>(message) && fds.size() == 2) {
+            if(success && std::holds_alternative<code_compilation_result_message>(message) && fds.size() == 2) {
                code_compilation_result_message& result = std::get<code_compilation_result_message>(message);
                code_ptr = _allocator->allocate(get_size_of_fd(fds[0]));
                mem_ptr = _allocator->allocate(get_size_of_fd(fds[1]));
@@ -324,7 +324,7 @@ wrapped_fd get_connection_to_compile_monitor(int cache_fd) {
 
    auto [success, message, fds] = read_message_with_fds(the_compile_monitor_trampoline.compile_manager_fd);
    EOS_ASSERT(success, misc_exception, "failed to read response from monitor process");
-   EOS_ASSERT(fc::holds_alternative<initalize_response_message>(message), misc_exception, "unexpected response from monitor process");
+   EOS_ASSERT(std::holds_alternative<initalize_response_message>(message), misc_exception, "unexpected response from monitor process");
    EOS_ASSERT(!std::get<initalize_response_message>(message).error_message, misc_exception, "Error message from monitor process: ${e}", ("e", *std::get<initalize_response_message>(message).error_message));
    return socket_to_monitor_session;
 }

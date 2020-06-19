@@ -60,7 +60,7 @@ namespace eosio { namespace chain {
       shared_vector<shared_key_weight>   keys;
    };
 
-   using shared_block_signing_authority = static_variant<shared_block_signing_authority_v0>;
+   using shared_block_signing_authority = std::variant<shared_block_signing_authority_v0>;
 
    struct shared_producer_authority {
       shared_producer_authority() = delete;
@@ -158,7 +158,7 @@ namespace eosio { namespace chain {
       }
    };
 
-   using block_signing_authority = static_variant<block_signing_authority_v0>;
+   using block_signing_authority = std::variant<block_signing_authority_v0>;
 
    struct producer_authority {
       name                    producer_name;

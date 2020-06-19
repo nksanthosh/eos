@@ -72,8 +72,8 @@ namespace fc { namespace crypto {
     * @return
     */
    template<const char * const * Prefixes, typename ...Ts>
-   struct base58_str_parser<fc::static_variant<Ts...>, Prefixes> {
-      static fc::static_variant<Ts...> apply(const std::string& base58str) {
+   struct base58_str_parser<std::variant<Ts...>, Prefixes> {
+      static std::variant<Ts...> apply(const std::string& base58str) {
          const auto pivot = base58str.find('_');
          FC_ASSERT(pivot != std::string::npos, "No delimiter in data, cannot determine suite type: ${str}", ("str", base58str));
 
@@ -81,7 +81,7 @@ namespace fc { namespace crypto {
          auto data_str = base58str.substr(pivot + 1);
          FC_ASSERT(!data_str.empty(), "Data only has suite type prefix: ${str}", ("str", base58str));
 
-         return base58_str_parser_impl<fc::static_variant<Ts...>, Prefixes, 0, Ts...>::apply(prefix_str, data_str);
+         return base58_str_parser_impl<std::variant<Ts...>, Prefixes, 0, Ts...>::apply(prefix_str, data_str);
       }
    };
 
@@ -122,8 +122,8 @@ namespace fc { namespace crypto {
    };
 
    template<typename ... Ts>
-   struct eq_comparator<fc::static_variant<Ts...>> {
-      using variant_type = fc::static_variant<Ts...>;
+   struct eq_comparator<std::variant<Ts...>> {
+      using variant_type = std::variant<Ts...>;
       struct visitor : public fc::visitor<bool> {
          visitor(const variant_type &b)
             : _b(b) {}
@@ -131,7 +131,7 @@ namespace fc { namespace crypto {
          template<typename KeyType>
          bool operator()(const KeyType &a) const {
             // const auto &b = _b.template get<KeyType>();
-            const auto &b = fc::template get<KeyType>(_b);
+            const auto &b = std::template get<KeyType>(_b);
             return eq_comparator<KeyType>::apply(a,b);
          }
 
@@ -139,7 +139,7 @@ namespace fc { namespace crypto {
       };
 
       static bool apply(const variant_type& a, const variant_type& b) {
-        return a.index() == b.index() && fc::visit(visitor(b), a);
+        return a.index() == b.index() && std::visit(visitor(b), a);
       }
    };
 
@@ -151,8 +151,8 @@ namespace fc { namespace crypto {
    };
 
    template<typename ... Ts>
-   struct less_comparator<fc::static_variant<Ts...>> {
-      using variant_type = fc::static_variant<Ts...>;
+   struct less_comparator<std::variant<Ts...>> {
+      using variant_type = std::variant<Ts...>;
       struct visitor : public fc::visitor<bool> {
          visitor(const variant_type &b)
             : _b(b) {}
@@ -160,7 +160,7 @@ namespace fc { namespace crypto {
          template<typename KeyType>
          bool operator()(const KeyType &a) const {
             // const auto &b = _b.template get<KeyType>();
-            const auto &b = fc::template get<KeyType>(_b);
+            const auto &b = std::template get<KeyType>(_b);
             return less_comparator<KeyType>::apply(a,b);
          }
 
@@ -168,7 +168,7 @@ namespace fc { namespace crypto {
       };
 
       static bool apply(const variant_type& a, const variant_type& b) {
-        return a.index() < b.index() || (a.index() == b.index() && fc::visit(visitor(b), a));
+        return a.index() < b.index() || (a.index() == b.index() && std::visit(visitor(b), a));
       }
    };
 
