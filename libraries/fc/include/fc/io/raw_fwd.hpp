@@ -10,6 +10,7 @@
 #include <unordered_set>
 #include <unordered_map>
 #include <set>
+   #include <variant>
 
 namespace fc {
    class time_point;
@@ -17,10 +18,6 @@ namespace fc {
    class variant;
    class variant_object;
    class path;
-   
-   #include <variant>
-   template <typename... Types>
-   using static_variant = std::variant<Types...>;
    
    template<typename IntType, typename EnumType> class enum_type;
    namespace ip { class endpoint; }

@@ -213,7 +213,7 @@ void cli::getline( const fc::string& prompt, fc::string& line)
    {
       std::cout << prompt;
       // sync_call( cin_thread, [&](){ std::getline( *input_stream, line ); }, "getline");
-      std::getline( fc::cin, line );
+      fc::getline( fc::cin, line );
       return;
    }
 }

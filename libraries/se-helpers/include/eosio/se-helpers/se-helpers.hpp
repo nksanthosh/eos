@@ -34,9 +34,6 @@ class secure_enclave_key {
         ~impl();
         void populate_public_key();
       };
-
-      // constexpr static size_t fwd_size = 128;
-      // fc::fwd<impl,fwd_size> my;
       impl my;
 
       friend void delete_key(secure_enclave_key&& key);

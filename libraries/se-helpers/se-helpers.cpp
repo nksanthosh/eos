@@ -50,8 +50,6 @@ void secure_enclave_key::impl::populate_public_key() {
 }
 
 secure_enclave_key::secure_enclave_key(void* seckeyref) {
-   //static_assert(sizeof(impl) <= fwd_size);
-
    my.key_ref = (SecKeyRef)(seckeyref);
    my.populate_public_key();
    CFRetain(my.key_ref);

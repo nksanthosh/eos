@@ -347,7 +347,6 @@ public:
       });
 
       // Send the HTTP request to the remote host
-      // error_code ec = conn_iter->second.visit(write_request_visitor(this, req, deadline));
       error_code ec = visit(write_request_visitor(this, req, deadline), conn_iter->second);
       FC_ASSERT(!ec, "Failed to send request: ${message}", ("message",ec.message()));
 
