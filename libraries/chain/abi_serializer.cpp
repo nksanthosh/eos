@@ -651,9 +651,6 @@ namespace eosio { namespace chain {
          EOS_ASSERT( fc::holds_alternative<array_index_path_item>(b), abi_exception, "trying to set array index without first pushing new array index item" );
 
          fc::get<array_index_path_item>(b).array_index = i;
-        //  EOS_ASSERT( b.contains<array_index_path_item>(), abi_exception, "trying to set array index without first pushing new array index item" );
-
-        //  b.get<array_index_path_item>().array_index = i;
       }
 
       void abi_traverse_context_with_path::hint_array_type_if_in_array() {
@@ -661,11 +658,6 @@ namespace eosio { namespace chain {
             return;
 
          fc::get<array_index_path_item>(path.back()).type_hint = array_type_path_root{};
-
-        //  if( path.size() == 0 || !path.back().contains<array_index_path_item>() )
-        //     return;
-
-        //  path.back().get<array_index_path_item>().type_hint = array_type_path_root{};
       }
 
       void abi_traverse_context_with_path::hint_struct_type_if_in_array( const map<type_name, struct_def>::const_iterator& itr ) {
@@ -673,10 +665,6 @@ namespace eosio { namespace chain {
             return;
 
          fc::get<array_index_path_item>(path.back()).type_hint = struct_type_path_root{ .struct_itr = itr };
-        //  if( path.size() == 0 || !path.back().contains<array_index_path_item>() )
-        //     return;
-
-        //  path.back().get<array_index_path_item>().type_hint = struct_type_path_root{ .struct_itr = itr };
       }
 
       void abi_traverse_context_with_path::hint_variant_type_if_in_array( const map<type_name, variant_def>::const_iterator& itr ) {
@@ -684,10 +672,6 @@ namespace eosio { namespace chain {
             return;
 
          fc::get<array_index_path_item>(path.back()).type_hint = variant_type_path_root{ .variant_itr = itr };
-        //  if( path.size() == 0 || !path.back().contains<array_index_path_item>() )
-        //     return;
-
-        //  path.back().get<array_index_path_item>().type_hint = variant_type_path_root{ .variant_itr = itr };
       }
 
       constexpr size_t const_strlen( const char* str )
@@ -818,17 +802,6 @@ namespace eosio { namespace chain {
             } else {
                s << "UNKNOWN";
             }
-            // if( th.contains<struct_type_path_root>() ) {
-            //    const auto& str = th.get<struct_type_path_root>().struct_itr->first;
-            //    output_name( s, str, shorten_names );
-            // } else if( th.contains<variant_type_path_root>() ) {
-            //    const auto& str = th.get<variant_type_path_root>().variant_itr->first;
-            //    output_name( s, str, shorten_names );
-            // } else if( th.contains<array_type_path_root>() ) {
-            //    s << "ARRAY";
-            // } else {
-            //    s << "UNKNOWN";
-            // }
          }
 
          void operator()( const field_path_item& item ) {

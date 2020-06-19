@@ -820,20 +820,6 @@ int apply_context::get_context_free_data( uint32_t index, char* buffer, size_t b
 
       cfd = &context_free_data[index];
    }
-  //  if( data.contains<packed_transaction::prunable_data_type::none>() ) {
-  //  } else if( data.contains<packed_transaction::prunable_data_type::partial>() ) {
-  //     if( index >= data.get<packed_transaction::prunable_data_type::partial>().context_free_segments.size() ) return -1;
-
-  //     cfd = trx_context.packed_trx.get_context_free_data(index);
-  //  } else {
-  //     const std::vector<bytes>& context_free_data =
-  //           data.contains<packed_transaction::prunable_data_type::full_legacy>() ?
-  //              data.get<packed_transaction::prunable_data_type::full_legacy>().context_free_segments :
-  //              data.get<packed_transaction::prunable_data_type::full>().context_free_segments;
-  //     if( index >= context_free_data.size() ) return -1;
-
-  //     cfd = &context_free_data[index];
-  //  }
 
    if( !cfd ) {
       if( control.is_producing_block() ) {

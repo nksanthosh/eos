@@ -15,7 +15,6 @@ namespace fc { namespace crypto {
 
    public_key private_key::get_public_key() const
    {
-      // return public_key(_storage.visit(public_key_visitor()));
       return public_key(fc::visit(public_key_visitor(), _storage));
    }
 
@@ -37,7 +36,6 @@ namespace fc { namespace crypto {
 
    signature private_key::sign( const sha256& digest, bool require_canonical ) const
    {
-      // return signature(_storage.visit(sign_visitor(digest, require_canonical)));
       return signature(fc::visit(sign_visitor(digest, require_canonical), _storage));
    }
 
@@ -50,8 +48,7 @@ namespace fc { namespace crypto {
       sha512 operator()(const KeyType& key) const
       {
          using PublicKeyType = typename KeyType::public_key_type;
-        //  return key.generate_shared_secret(_pub_storage.template get<PublicKeyType>());
-        return key.generate_shared_secret(fc::template get<PublicKeyType>(_pub_storage));
+         return key.generate_shared_secret(fc::template get<PublicKeyType>(_pub_storage));
       }
 
       const public_key::storage_type&  _pub_storage;
@@ -59,7 +56,6 @@ namespace fc { namespace crypto {
 
    sha512 private_key::generate_shared_secret( const public_key& pub ) const
    {
-      // return _storage.visit(generate_shared_secret_visitor(pub._storage));
       return fc::visit(generate_shared_secret_visitor(pub._storage), _storage);
    }
 
@@ -136,7 +132,6 @@ namespace fc { namespace crypto {
       }
 
       auto data_str = fc::visit(base58str_visitor<storage_type, config::private_key_prefix>(yield), _storage);
-      //auto data_str = _storage.visit(base58str_visitor<storage_type, config::private_key_prefix>(yield));
       return std::string(config::private_key_base_prefix) + "_" + data_str;
    }
 

@@ -25,7 +25,6 @@ extern const char* const state_history_plugin_abi;
 prunable_data_type::prunable_data_t get_prunable_data_from_traces(std::vector<state_history::transaction_trace>& traces,
                                                                   const transaction_id_type&                     id) {
    auto cfd_trace_itr = std::find_if(traces.begin(), traces.end(), [id](const state_history::transaction_trace& v) {
-      // return v.get<state_history::transaction_trace_v0>().id == id;
       return fc::get<state_history::transaction_trace_v0>(v).id == id;
    });
 

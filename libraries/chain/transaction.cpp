@@ -594,13 +594,6 @@ const vector<bytes>* packed_transaction::get_context_free_data()const {
    } else {
       return nullptr;
    }
-  //  if( prunable_data.prunable_data.contains<prunable_data_type::full>() ) {
-  //     return &prunable_data.prunable_data.get<prunable_data_type::full>().context_free_segments;
-  //  } else if( prunable_data.prunable_data.contains<prunable_data_type::full_legacy>() ) {
-  //     return &prunable_data.prunable_data.get<prunable_data_type::full_legacy>().context_free_segments;
-  //  } else {
-  //     return nullptr;
-  //  }
 }
 
 const bytes* maybe_get_context_free_data(const packed_transaction::prunable_data_type::none&, std::size_t) { return nullptr; }
@@ -645,10 +638,6 @@ void packed_transaction::reflector_init()
       auto& legacy = fc::get<prunable_data_type::full_legacy>(prunable_data.prunable_data);
       legacy.context_free_segments = unpack_context_free_data( legacy.packed_context_free_data, compression );
    }
-  //  if( prunable_data.prunable_data.contains<prunable_data_type::full_legacy>() ) {
-  //     auto& legacy = prunable_data.prunable_data.get<prunable_data_type::full_legacy>();
-  //     legacy.context_free_segments = unpack_context_free_data( legacy.packed_context_free_data, compression );
-  //  }
    estimated_size = calculate_estimated_size();
 }
 } } // eosio::chain

@@ -260,7 +260,6 @@ public:
    };
 
    bool check_closed( const connection_map::iterator& conn_itr ) {
-      // if (conn_itr->second.visit(check_closed_visitor())) {
       if (fc::visit(check_closed_visitor(), conn_itr->second)) {
          _connections.erase(conn_itr);
          return true;
@@ -359,7 +358,6 @@ public:
       http::response<http::string_body> res;
 
       // Receive the HTTP response
-      // ec = conn_iter->second.visit(read_response_visitor(this, buffer, res, deadline));
       ec = fc::visit(read_response_visitor(this, buffer, res, deadline), conn_iter->second);
       FC_ASSERT(!ec, "Failed to read response: ${message}", ("message",ec.message()));
 

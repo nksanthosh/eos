@@ -21,12 +21,10 @@ namespace fc { namespace crypto {
 
    public_key::public_key( const signature& c, const sha256& digest, bool check_canonical )
    :_storage(fc::visit(recovery_visitor(digest, check_canonical), c._storage))
-  //  :_storage(c._storage.visit(recovery_visitor(digest, check_canonical)))
    {
    }
 
    int public_key::which() const {
-      // return _storage.which();
       return _storage.index();
    }
 
@@ -77,15 +75,12 @@ namespace fc { namespace crypto {
    bool public_key::valid()const
    {
      return fc::visit(is_valid_visitor(), _storage);
-      // return _storage.visit(is_valid_visitor());
    }
 
    std::string public_key::to_string(const fc::yield_function_t& yield) const
    {
-      // auto data_str = _storage.visit(base58str_visitor<storage_type, config::public_key_prefix, 0>(yield));
       auto data_str = fc::visit(base58str_visitor<storage_type, config::public_key_prefix, 0>(yield), _storage);
 
-      // auto which = _storage.which();
       auto which = _storage.index();
       if (which == 0) {
          return std::string(config::public_key_legacy_prefix) + data_str;

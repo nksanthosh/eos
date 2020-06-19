@@ -165,10 +165,6 @@ struct pending_state {
          return fc::get<building_block>(_block_stage)._pending_block_header_state;
 
       return fc::get<assembled_block>(_block_stage)._pending_block_header_state;     
-      // if( _block_stage.contains<building_block>() )
-      //    return _block_stage.get<building_block>()._pending_block_header_state;
-
-      // return _block_stage.get<assembled_block>()._pending_block_header_state;
    }
 
    const deque<transaction_receipt>& get_trx_receipts()const {
@@ -179,15 +175,7 @@ struct pending_state {
          return fc::get<assembled_block>(_block_stage)._unsigned_block->transactions;
 
       return fc::get<completed_block>(_block_stage)._block_state->block->transactions;
-
-      // if( _block_stage.contains<building_block>() )
-      //    return _block_stage.get<building_block>()._pending_trx_receipts;
-
-      // if( _block_stage.contains<assembled_block>() )
-      //    return _block_stage.get<assembled_block>()._unsigned_block->transactions;
-
-      // return _block_stage.get<completed_block>()._block_state->block->transactions;
-   }
+    }
 
    deque<transaction_metadata_ptr> extract_trx_metas() {
       if( fc::holds_alternative<building_block>(_block_stage) )
@@ -197,18 +185,10 @@ struct pending_state {
          return std::move( fc::get<assembled_block>(_block_stage)._trx_metas );
 
       return fc::get<completed_block>(_block_stage)._block_state->extract_trxs_metas();
-      // if( _block_stage.contains<building_block>() )
-      //    return std::move( _block_stage.get<building_block>()._pending_trx_metas );
-
-      // if( _block_stage.contains<assembled_block>() )
-      //    return std::move( _block_stage.get<assembled_block>()._trx_metas );
-
-      // return _block_stage.get<completed_block>()._block_state->extract_trxs_metas();
    }
 
    bool is_protocol_feature_activated( const digest_type& feature_digest )const {
       if( fc::holds_alternative<building_block>(_block_stage) ) {
-        //  auto& bb = _block_stage.get<building_block>();
         auto& bb = fc::get<building_block>(_block_stage);
          const auto& activated_features = bb._pending_block_header_state.prev_activated_protocol_features->protocol_features;
 
@@ -229,7 +209,6 @@ struct pending_state {
          // TODO: implement this
       }
 
-      // const auto& activated_features = _block_stage.get<completed_block>()._block_state->activated_protocol_features->protocol_features;
       const auto& activated_features = fc::get<completed_block>(_block_stage)._block_state->activated_protocol_features->protocol_features;
       return (activated_features.find( feature_digest ) != activated_features.end());
    }
@@ -1151,12 +1130,9 @@ struct controller_impl {
 
    // The returned scoped_exit should not exceed the lifetime of the pending which existed when make_block_restore_point was called.
    fc::scoped_exit<std::function<void()>> make_block_restore_point() {
-      // auto& bb = pending->_block_stage.get<building_block>();
       auto& bb = fc::get<building_block>(pending->_block_stage);
       auto orig_trx_receipts_size           = bb._pending_trx_receipts.size();
       auto orig_trx_metas_size              = bb._pending_trx_metas.size();
-      // auto orig_trx_receipt_digests_size    = bb._trx_mroot_or_receipt_digests.contains<digests_t>() ?
-      //       bb._trx_mroot_or_receipt_digests.get<digests_t>().size() : 0;
       auto orig_trx_receipt_digests_size    = fc::holds_alternative<digests_t>(bb._trx_mroot_or_receipt_digests) ?
             fc::get<digests_t>(bb._trx_mroot_or_receipt_digests).size() : 0;
       auto orig_action_receipt_digests_size = bb._action_receipt_digests.size();
@@ -1167,12 +1143,9 @@ struct controller_impl {
             orig_trx_receipt_digests_size,
             orig_action_receipt_digests_size]()
       {
-        //  auto& bb = pending->_block_stage.get<building_block>();
         auto& bb = fc::get<building_block>(pending->_block_stage);
          bb._pending_trx_receipts.resize(orig_trx_receipts_size);
          bb._pending_trx_metas.resize(orig_trx_metas_size);
-        //  if( bb._trx_mroot_or_receipt_digests.contains<digests_t>() )
-        //     bb._trx_mroot_or_receipt_digests.get<digests_t>().resize(orig_trx_receipt_digests_size);
         if( fc::holds_alternative<digests_t>(bb._trx_mroot_or_receipt_digests) )
             fc::get<digests_t>(bb._trx_mroot_or_receipt_digests).resize(orig_trx_receipt_digests_size);
          bb._action_receipt_digests.resize(orig_action_receipt_digests_size);

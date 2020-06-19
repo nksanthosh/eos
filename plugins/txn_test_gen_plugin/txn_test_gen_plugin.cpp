@@ -117,14 +117,6 @@ struct txn_test_gen_plugin_impl {
                   ++_txcount;
                }
             }                 
-            // if (result.contains<fc::exception_ptr>()) {
-            //    next(result.get<fc::exception_ptr>());
-            // } else {
-            //    if (result.contains<transaction_trace_ptr>() && result.get<transaction_trace_ptr>()->receipt) {
-            //       _total_us += result.get<transaction_trace_ptr>()->receipt->cpu_usage_us;
-            //       ++_txcount;
-            //    }
-            // }
          });
       }
    }

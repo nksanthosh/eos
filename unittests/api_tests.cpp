@@ -1189,12 +1189,6 @@ BOOST_FIXTURE_TEST_CASE(transaction_tests, TESTER) { try {
          } else {
             id = fc::get<transaction_id_type>(receipt.trx);
          }
-        //  if( receipt.trx.contains<packed_transaction>() ) {
-        //     const auto& pt = receipt.trx.get<packed_transaction>();
-        //     id = pt.id();
-        //  } else {
-        //     id = receipt.trx.get<transaction_id_type>();
-        //  }
          block_ids.insert( id );
       }
 

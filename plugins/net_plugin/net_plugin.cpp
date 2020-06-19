@@ -2010,8 +2010,6 @@ namespace eosio {
       for( const auto& recpt : sb->transactions ) {
          const transaction_id_type& id = (recpt.trx.index() == 0) ? fc::get<transaction_id_type>(recpt.trx)
                                                                   : fc::get<packed_transaction>(recpt.trx).id();
-        //  const transaction_id_type& id = (recpt.trx.which() == 0) ? recpt.trx.get<transaction_id_type>()
-        //                                                           : recpt.trx.get<packed_transaction>().id();
          auto range = local_txns.get<by_id>().equal_range( id );
          for( auto itr = range.first; itr != range.second; ++itr ) {
             local_txns.modify( itr, ubn );
@@ -2520,7 +2518,6 @@ namespace eosio {
             net_message msg;
             fc::raw::unpack( ds, msg );
             msg_handler m( shared_from_this() );
-            // msg.visit( m );
             fc::visit( m, msg );
          }
 

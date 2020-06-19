@@ -23,7 +23,6 @@ secure_enclave_key::impl::~impl() {
 
 void secure_enclave_key::impl::populate_public_key() {
   //without a good way to create fc::public_key direct, create a serialized version to create a public_key from
-  // char serialized_public_key[1 + sizeof(fc::crypto::r1::public_key_data)] = {fc::crypto::public_key::storage_type::position<fc::crypto::r1::public_key_shim>()};
   char serialized_public_key[1 + sizeof(fc::crypto::r1::public_key_data)] = {fc::get_index<fc::crypto::public_key::storage_type, fc::crypto::r1::public_key_shim>()};
 
   SecKeyRef pubkey = SecKeyCopyPublicKey(key_ref);
@@ -96,13 +95,11 @@ fc::crypto::signature secure_enclave_key::sign(const fc::sha256& digest) const {
    long derSize = CFDataGetLength(signature);
    d2i_ECDSA_SIG(&sig.obj, &der_bytes, derSize);
 
-  //  char serialized_signature[sizeof(fc::crypto::r1::compact_signature) + 1] = {fc::crypto::signature::storage_type::position<fc::crypto::r1::signature_shim>()};
-  char serialized_signature[sizeof(fc::crypto::r1::compact_signature) + 1] = {fc::get_index<fc::crypto::signature::storage_type, fc::crypto::r1::signature_shim>()};
+   char serialized_signature[sizeof(fc::crypto::r1::compact_signature) + 1] = {fc::get_index<fc::crypto::signature::storage_type, fc::crypto::r1::signature_shim>()};
 
    fc::crypto::r1::compact_signature* compact_sig = (fc::crypto::r1::compact_signature *)(serialized_signature + 1);
    fc::ec_key key = EC_KEY_new_by_curve_name(NID_X9_62_prime256v1);
-  //  *compact_sig = fc::crypto::r1::signature_from_ecdsa(key,my.pub_key._storage.get<fc::crypto::r1::public_key_shim>()._data, sig, digest);
-  *compact_sig = fc::crypto::r1::signature_from_ecdsa(key, fc::get<fc::crypto::r1::public_key_shim>(my.pub_key._storage)._data, sig, digest);
+   *compact_sig = fc::crypto::r1::signature_from_ecdsa(key, fc::get<fc::crypto::r1::public_key_shim>(my.pub_key._storage)._data, sig, digest);
 
    fc::crypto::signature final_signature;
    fc::datastream<const char*> ds(serialized_signature, sizeof(serialized_signature));

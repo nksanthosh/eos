@@ -92,7 +92,7 @@ namespace fc { namespace crypto {
       template< typename KeyType >
       std::string operator()( const KeyType& key ) const {
          using data_type = typename KeyType::data_type;
-         constexpr int position = fc::get_index<Storage, KeyType>(); //Storage::template position<KeyType>();
+         constexpr int position = fc::get_index<Storage, KeyType>();
          constexpr bool is_default = position == DefaultPosition;
 
          checksummed_data<data_type> wrapper;

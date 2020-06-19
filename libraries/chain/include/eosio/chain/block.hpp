@@ -48,10 +48,6 @@ namespace eosio { namespace chain {
             fc::raw::pack( enc, fc::get<transaction_id_type>(trx) );
          else
             fc::raw::pack( enc, fc::get<packed_transaction_v0>(trx).packed_digest() ); 
-        //  if( trx.contains<transaction_id_type>() )
-        //     fc::raw::pack( enc, trx.get<transaction_id_type>() );
-        //  else
-        //     fc::raw::pack( enc, trx.get<packed_transaction_v0>().packed_digest() );
          return enc.result();
       }
    };
@@ -137,10 +133,6 @@ namespace eosio { namespace chain {
             fc::raw::pack( enc, fc::get<transaction_id_type>(trx) );
          else
             fc::raw::pack( enc, fc::get<packed_transaction>(trx).packed_digest() );
-        //  if( trx.contains<transaction_id_type>() )
-        //     fc::raw::pack( enc, trx.get<transaction_id_type>() );
-        //  else
-        //     fc::raw::pack( enc, trx.get<packed_transaction>().packed_digest() );
          return enc.result();
       }
    };

@@ -1111,9 +1111,6 @@ namespace eosio { namespace testing {
          fc::visit([&legacy_keys, &p](const auto& auth){
             legacy_keys.emplace_back(legacy::producer_key{p.producer_name, auth.keys.front().key});
          }, p.authority);
-        //  p.authority.visit([&legacy_keys, &p](const auto& auth){
-        //     legacy_keys.emplace_back(legacy::producer_key{p.producer_name, auth.keys.front().key});
-        //  });
       }
 
       return push_action( config::system_account_name, N(setprods), config::system_account_name,
